@@ -38,4 +38,6 @@ jobs:
           cat package.json
           npm install
           npm run build
-          ls
+          find . -type f -name '*.ts' -name '*.sh' -delete
+          rm -rf node_modules package-lock.json tsconfig*
+          ls -al
