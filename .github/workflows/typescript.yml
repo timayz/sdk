@@ -43,7 +43,8 @@ jobs:
         run: |
           cd typescript-axios-client
           sed -i -r 's/"name": "(.*)"/"name": "@timada\/\1-client"/g' package.json
-          sed -i 's/Unlicense/APACHE-2.0/g' package.json
+          # sed -i 's/Unlicense/APACHE-2.0/g' package.json
+          jq -M '. + {version:"APACHE-2.0", files:["dist"]}' package.json
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
           cat package.json
           # npm install
