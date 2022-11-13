@@ -37,6 +37,6 @@ jobs:
           sed -i 's/Unlicense/APACHE-2.0/g' package.json
           npm install
           npm run build
-          find . -type f -name '*.ts' -name '*.sh' -exec rm -r {} \;
+          find . -name '*.ts' -name '*.sh' -exec rm -r {} \;
           rm -rf node_modules package-lock.json tsconfig*
           ls -al
