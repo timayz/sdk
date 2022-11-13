@@ -1,7 +1,8 @@
 name: Typescript
-on:
-  repository_dispatch:
-    types: [released]
+# on:
+#   repository_dispatch:
+#     types: [released]
+on: pull_request
 
 jobs:
   release:
@@ -20,11 +21,13 @@ jobs:
         uses: jsdaniell/create-json@v1.2.1
         with:
           name: "openapi.json"
-          json: ${{ github.event.client_payload.pkg_spec }}
+          # json: ${{ github.event.client_payload.pkg_spec }}
+          json: '{"openapi":"3.0.3","info":{"title":"api","description":"","contact":{"name":""},"license":{"name":""},"version":"0.0.3"},"paths":{"/groups":{"get":{"tags":["group"],"description":"","operationId":"find_all","responses":{"200":{"description":"Get groups did not result error","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Group"}}}}}},"deprecated":false}},"/groups/create":{"post":{"tags":["group"],"description":"","operationId":"create","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateCommand"}}},"required":true},"responses":{"200":{"description":"Create group did not result error","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Group"}}}}}},"deprecated":false}}},"components":{"schemas":{"CreateCommand":{"type":"object","required":["name"],"properties":{"name":{"type":"string"}}},"Group":{"type":"object","required":["name"],"properties":{"name":{"type":"string","example":"Transquadra"}}}}}}'
 
       - name: Setup openapi config
         run: |
-          export SDK_PKG_NAME=${{ github.event.client_payload.pkg_name }}
+          # export SDK_PKG_NAME=${{ github.event.client_payload.pkg_name }}
+          export SDK_PKG_NAME=cobase
           envsubst < config/typescript.yml> typescript-axios-config.yml
 
       - name: Generate typescript Client
@@ -33,7 +36,8 @@ jobs:
           generator: typescript-axios
           config-file: typescript-axios-config.yml
           generator-tag: v6.2.1
-          command-args: --git-host gitlab.com --git-user-id timada-org --git-repo-id sdk
+          command-args: --git-host github.com --git-user-id timada-org --git-repo-id cobase
+          # command-args: --git-host github.com --git-user-id timada-org --git-repo-id ${{ github.event.client_payload.pkg_name }}
 
       - name: Publish
         run: |
@@ -41,7 +45,8 @@ jobs:
           sed -i -r 's/"name": "(.*)"/"name": "@timada\/\1-client"/g' package.json
           sed -i 's/Unlicense/APACHE-2.0/g' package.json
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-          npm install
-          npm publish --access public
+          cat package.json
+          # npm install
+          # npm publish --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
