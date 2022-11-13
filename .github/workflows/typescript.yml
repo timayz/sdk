@@ -33,8 +33,9 @@ jobs:
       - name: Install dependencies
         run: |
           cd typescript-axios-client
+          sed -i 's/"name": "(.*)"/@timada/\1/g' package.json
           sed -i 's/Unlicense/APACHE-2.0/g' package.json
           cat package.json
-          npm ci --include=dev
+          npm install
           npm run build
           ls
