@@ -20,6 +20,8 @@ jobs:
         with:
           generator: typescript-axios
           config-file: config/typescript.yml
+          generator-tag: v6.2.1
+          command-args: --git-host gitlab.com --git-user-id timada-org --git-repo-id sdk
 
       - name: Do something with the client
         run: |
