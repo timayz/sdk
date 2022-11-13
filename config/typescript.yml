@@ -1,4 +1,4 @@
-npmName: "$SDK_SERVICE_NAME"
+npmName: "$SDK_PKG_NAME"
 supportsES6: true
 ensureUniqueParams: true
 modelPropertyNaming: original

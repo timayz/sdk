@@ -2,8 +2,8 @@ name: Typescript
 on: pull_request
 
 env:
-  CI_PKG_NAME: cobase
-  CI_PKG_SPEC: '{"openapi":"3.0.3","info":{"title":"api","description":"","contact":{"name":""},"license":{"name":""},"version":"0.1.0"},"paths":{"/groups":{"get":{"tags":["group"],"description":"","operationId":"find_all","responses":{"200":{"description":"Get groups did not result error","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Group"}}}}}},"deprecated":false}},"/groups/create":{"post":{"tags":["group"],"description":"","operationId":"create","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateCommand"}}},"required":true},"responses":{"200":{"description":"Create group did not result error","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Group"}}}}}},"deprecated":false}}},"components":{"schemas":{"CreateCommand":{"type":"object","required":["name"],"properties":{"name":{"type":"string"}}},"Group":{"type":"object","required":["name"],"properties":{"name":{"type":"string","example":"Transquadra"}}}}}}'
+  SDK_PKG_NAME: cobase
+  SDK_PKG_SPEC: '{"openapi":"3.0.3","info":{"title":"api","description":"","contact":{"name":""},"license":{"name":""},"version":"0.0.1"},"paths":{"/groups":{"get":{"tags":["group"],"description":"","operationId":"find_all","responses":{"200":{"description":"Get groups did not result error","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Group"}}}}}},"deprecated":false}},"/groups/create":{"post":{"tags":["group"],"description":"","operationId":"create","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateCommand"}}},"required":true},"responses":{"200":{"description":"Create group did not result error","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Group"}}}}}},"deprecated":false}}},"components":{"schemas":{"CreateCommand":{"type":"object","required":["name"],"properties":{"name":{"type":"string"}}},"Group":{"type":"object","required":["name"],"properties":{"name":{"type":"string","example":"Transquadra"}}}}}}'
 
 jobs:
   release:
@@ -13,17 +13,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - run: echo "$CI_PKG_SPEC" > openapi.json
+      - name: Create openapi.json
+        run: echo "$SDK_PKG_SPEC" > openapi.json
+
+      - name: Create openapi config
+        run: envsubst < config/typescript.yml> typescript-axios-config.yml
 
       - name: Generate typescript Client
         uses: openapi-generators/openapitools-generator-action@v1
         with:
           generator: typescript-axios
-          config-file: config/typescript.yml
+          config-file: typescript-axios-config.yml
           generator-tag: v6.2.1
           command-args: --git-host gitlab.com --git-user-id timada-org --git-repo-id sdk
 
       - name: Do something with the client
         run: |
+          cat typescript-axios-config.yml
           cd typescript-axios-client
           cat package.json
