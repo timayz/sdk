@@ -1,9 +1,7 @@
 name: Typescript
-on: pull_request
-
-env:
-  SDK_PKG_NAME: cobase
-  SDK_PKG_SPEC: '{"openapi":"3.0.3","info":{"title":"api","description":"","contact":{"name":""},"license":{"name":""},"version":"0.0.2"},"paths":{"/groups":{"get":{"tags":["group"],"description":"","operationId":"find_all","responses":{"200":{"description":"Get groups did not result error","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Group"}}}}}},"deprecated":false}},"/groups/create":{"post":{"tags":["group"],"description":"","operationId":"create","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateCommand"}}},"required":true},"responses":{"200":{"description":"Create group did not result error","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Group"}}}}}},"deprecated":false}}},"components":{"schemas":{"CreateCommand":{"type":"object","required":["name"],"properties":{"name":{"type":"string"}}},"Group":{"type":"object","required":["name"],"properties":{"name":{"type":"string","example":"Transquadra"}}}}}}'
+on:
+  repository_dispatch:
+    types: [released]
 
 jobs:
   release:
@@ -19,7 +17,8 @@ jobs:
 
       - name: Setup openapi config
         run: |
-          echo "$SDK_PKG_SPEC" > openapi.json
+          echo "${{ github.event.client_payload.pkg_spec }}" > openapi.json
+          export SDK_PKG_NAME=${{ github.event.client_payload.pkg_name }}
           envsubst < config/typescript.yml> typescript-axios-config.yml
 
       - name: Generate typescript Client
@@ -33,11 +32,10 @@ jobs:
       - name: Publish
         run: |
           cd typescript-axios-client
-          sed -i -r 's/"name": "(.*)"/"name": "@timada\/\1"/g' package.json
+          sed -i -r 's/"name": "(.*)"/"name": "@timada\/\1-client"/g' package.json
           sed -i 's/Unlicense/APACHE-2.0/g' package.json
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
           npm install
-          rm -rf package-lock.json tsconfig* *.ts *.sh .openapi-generator*
           npm publish --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
