@@ -30,13 +30,14 @@ jobs:
           generator-tag: v6.2.1
           command-args: --git-host gitlab.com --git-user-id timada-org --git-repo-id sdk
 
-      - name: Install dependencies
+      - name: Publish
         run: |
           cd typescript-axios-client
           sed -i -r 's/"name": "(.*)"/"name": "@timada\/\1"/g' package.json
           sed -i 's/Unlicense/APACHE-2.0/g' package.json
           npm install
           npm run build
-          find . -name '*.ts' -name '*.sh' -exec rm -r {} \;
-          rm -rf node_modules package-lock.json tsconfig*
+          rm -rf node_modules package-lock.json tsconfig* *.ts *.sh
           ls -al
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
