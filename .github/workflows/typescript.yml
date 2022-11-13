@@ -1,8 +1,7 @@
 name: Typescript
-# on:
-#   repository_dispatch:
-#     types: [released]
-on: pull_request
+on:
+  repository_dispatch:
+    types: [released]
 
 jobs:
   release:
