@@ -18,6 +18,7 @@ jobs:
       - name: Setup openapi config
         run: |
           echo "${{ github.event.client_payload.pkg_spec }}" > openapi.json
+          cat openapi.json
           export SDK_PKG_NAME=${{ github.event.client_payload.pkg_name }}
           envsubst < config/typescript.yml> typescript-axios-config.yml
 
