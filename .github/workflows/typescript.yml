@@ -33,13 +33,12 @@ jobs:
           generator: typescript-axios
           config-file: typescript-axios-config.yml
           generator-tag: v6.2.1
-          command-args: --git-host gitlab.com --git-user-id timada-org --git-repo-id sdk
+          command-args: --git-host github.com --git-user-id timada-org --git-repo-id ${{ github.event.client_payload.pkg_name }}
 
       - name: Publish
         run: |
           cd typescript-axios-client
-          sed -i -r 's/"name": "(.*)"/"name": "@timada\/\1-client"/g' package.json
-          sed -i 's/Unlicense/APACHE-2.0/g' package.json
+          jq -M '. + {name:"@timada/${{ github.event.client_payload.pkg_name }}", version:"APACHE-2.0", files:["dist"]}' package.json > package.json.tmp && mv package.json.tmp package.json
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
           npm install
           npm publish --access public
