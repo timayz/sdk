@@ -35,10 +35,10 @@ jobs:
           cd typescript-axios-client
           sed -i -r 's/"name": "(.*)"/"name": "@timada\/\1"/g' package.json
           sed -i 's/Unlicense/APACHE-2.0/g' package.json
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
           npm install
           npm run build
-          rm -rf node_modules package-lock.json tsconfig* *.ts *.sh .openapi-generator*
+          # rm -rf node_modules package-lock.json tsconfig* *.ts *.sh .openapi-generator*
           npm publish --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
