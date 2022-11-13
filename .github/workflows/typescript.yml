@@ -37,8 +37,6 @@ jobs:
           sed -i 's/Unlicense/APACHE-2.0/g' package.json
           npm install
           npm run build
-          rm -rf node_modules package-lock.json tsconfig* *.ts *.sh
-          ls -al
-          cat .npmignore
+          npm publish
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
