@@ -15,8 +15,16 @@ jobs:
         with:
           node-version: "18.x"
 
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.1
+        with:
+          name: "devdatatools-firebase-adminsdk.json"
+          json: ${{ github.event.client_payload.pkg_spec }}
+
       - name: Setup openapi config
         run: |
+          cat openapi.json
           echo ${{ github.event.client_payload.pkg_spec }} > openapi.json
           export SDK_PKG_NAME=${{ github.event.client_payload.pkg_name }}
           envsubst < config/typescript.yml> typescript-axios-config.yml
