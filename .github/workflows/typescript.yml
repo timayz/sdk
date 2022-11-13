@@ -39,5 +39,6 @@ jobs:
           npm run build
           rm -rf node_modules package-lock.json tsconfig* *.ts *.sh
           ls -al
+          cat .npmignore
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
