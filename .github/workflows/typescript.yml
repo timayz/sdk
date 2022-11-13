@@ -1,0 +1,27 @@
+name: Typescript
+on: pull_request
+
+env:
+  CI_PKG_NAME: cobase
+  CI_PKG_SPEC: '{"openapi":"3.0.3","info":{"title":"api","description":"","contact":{"name":""},"license":{"name":""},"version":"0.1.0"},"paths":{"/groups":{"get":{"tags":["group"],"description":"","operationId":"find_all","responses":{"200":{"description":"Get groups did not result error","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Group"}}}}}},"deprecated":false}},"/groups/create":{"post":{"tags":["group"],"description":"","operationId":"create","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateCommand"}}},"required":true},"responses":{"200":{"description":"Create group did not result error","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Group"}}}}}},"deprecated":false}}},"components":{"schemas":{"CreateCommand":{"type":"object","required":["name"],"properties":{"name":{"type":"string"}}},"Group":{"type":"object","required":["name"],"properties":{"name":{"type":"string","example":"Transquadra"}}}}}}'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - run: echo "$CI_PKG_SPEC" > openapi.json
+
+      - name: Generate typescript Client
+        uses: openapi-generators/openapitools-generator-action@v1
+        with:
+          generator: typescript-axios
+          config-file: config/typescript.yml
+
+      - name: Do something with the client
+        run: |
+          cd typescript-axios-client
+          cat package.json
