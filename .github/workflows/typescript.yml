@@ -38,7 +38,7 @@ jobs:
       - name: Publish
         run: |
           cd typescript-axios-client
-          jq -M '. + {name:"@timada/${{ github.event.client_payload.pkg_name }}", version:"APACHE-2.0", files:["dist"]}' package.json > package.json.tmp && mv package.json.tmp package.json
+          jq -M '. + {name:"@timada/${{ github.event.client_payload.pkg_name }}", license:"APACHE-2.0", files:["dist"]}' package.json > package.json.tmp && mv package.json.tmp package.json
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
           npm install
           npm publish --access public
