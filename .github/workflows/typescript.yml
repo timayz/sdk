@@ -13,11 +13,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Create openapi.json
-        run: echo "$SDK_PKG_SPEC" > openapi.json
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          cache: "npm"
 
-      - name: Create openapi config
-        run: envsubst < config/typescript.yml> typescript-axios-config.yml
+      - name: Setup openapi config
+        run: |
+          echo "$SDK_PKG_SPEC" > openapi.json
+          envsubst < config/typescript.yml> typescript-axios-config.yml
 
       - name: Generate typescript Client
         uses: openapi-generators/openapitools-generator-action@v1
@@ -27,8 +31,11 @@ jobs:
           generator-tag: v6.2.1
           command-args: --git-host gitlab.com --git-user-id timada-org --git-repo-id sdk
 
-      - name: Do something with the client
+      - name: Install dependencies
         run: |
-          cat typescript-axios-config.yml
           cd typescript-axios-client
+          sed -i 's/Unlicense/APACHE-2.0/g' package.json
           cat package.json
+          npm ci --include=dev
+          npm run build
+          ls
