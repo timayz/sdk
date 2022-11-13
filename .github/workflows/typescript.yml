@@ -1,0 +1,41 @@
+name: Typescript
+on:
+  repository_dispatch:
+    types: [released]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+
+      - name: Setup openapi config
+        run: |
+          echo "${{ github.event.client_payload.pkg_spec }}" > openapi.json
+          export SDK_PKG_NAME=${{ github.event.client_payload.pkg_name }}
+          envsubst < config/typescript.yml> typescript-axios-config.yml
+
+      - name: Generate typescript Client
+        uses: openapi-generators/openapitools-generator-action@v1
+        with:
+          generator: typescript-axios
+          config-file: typescript-axios-config.yml
+          generator-tag: v6.2.1
+          command-args: --git-host gitlab.com --git-user-id timada-org --git-repo-id sdk
+
+      - name: Publish
+        run: |
+          cd typescript-axios-client
+          sed -i -r 's/"name": "(.*)"/"name": "@timada\/\1-client"/g' package.json
+          sed -i 's/Unlicense/APACHE-2.0/g' package.json
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+          npm install
+          npm publish --access public
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
